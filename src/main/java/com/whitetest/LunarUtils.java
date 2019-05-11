@@ -45,7 +45,9 @@ public class LunarUtils {
         return day;
     }
 
-    //====== 传回农历 y年的总天数
+    /**
+     *  传回农历 y 年的总天数
+     */
     private static int yearDays(int y) {
         int i, sum = 348;
         for (i = 0x8000; i > 0x8; i >>= 1) {
@@ -54,7 +56,9 @@ public class LunarUtils {
         return (sum + leapDays(y));
     }
 
-    //====== 传回农历 y年闰月的天数
+    /**
+     *  传回农历 y 年闰月的天数 : 0/29/30
+     */
     private static int leapDays(int y) {
         if (leapMonth(y) != 0) {
             if ((lunarInfo[y - 1900] & 0x10000) != 0)
@@ -65,12 +69,16 @@ public class LunarUtils {
             return 0;
     }
 
-    //====== 传回农历 y年闰哪个月 1-12 , 没闰传回 0
+    /**
+     *  传回农历 y年闰哪个月 1-12 , 没闰传回 0
+     */
     private static int leapMonth(int y) {
         return (int) (lunarInfo[y - 1900] & 0xf);
     }
 
-    //====== 传回农历 y年m月的总天数
+    /**
+     *  传回农历 y年m月的总天数 : 29/30
+     */
     private static int monthDays(int y, int m) {
         if ((lunarInfo[y - 1900] & (0x10000 >> m)) == 0)
             return 29;
@@ -78,33 +86,35 @@ public class LunarUtils {
             return 30;
     }
 
-    //====== 传回农历 y年的生肖
+    /**
+     *  传回农历 y 年的生肖
+     */
     public String animalsYear() {
         final String[] Animals = new String[]{"鼠", "牛", "虎", "兔", "龙", "蛇", "马", "羊", "猴", "鸡", "狗", "猪"};
         return Animals[(year - 4) % 12];
     }
 
-    //====== 传入 月日的offset 传回干支, 0=甲子
+    /**
+     *  传回农历 y 年的干支
+     */
+    public String cyclical() {
+        int num = year - 1900 + 36;
+        return (cyclicalm(num));
+    }
+
     private static String cyclicalm(int num) {
         final String[] Gan = new String[]{"甲", "乙", "丙", "丁", "戊", "己", "庚", "辛", "壬", "癸"};
         final String[] Zhi = new String[]{"子", "丑", "寅", "卯", "辰", "巳", "午", "未", "申", "酉", "戌", "亥"};
         return (Gan[num % 10] + Zhi[num % 12]);
     }
 
-    //====== 传入 offset 传回干支, 0=甲子
-    public String cyclical() {
-        int num = year - 1900 + 36;
-        return (cyclicalm(num));
-    }
-
     /**
-     * 传出y年m月d日对应的农历.
-     * yearCyl3:农历年与1864的相差数 ?
-     * monCyl4:从1900年1月31日以来,闰月数
-     * dayCyl5:与1900年1月31日相差的天数,再加40 ?
+     * LunarUtils类逻辑主题部分
      *
-     * @param cal
-     * @return
+     * 传出y年m月d日对应的农历.
+     * yearCyl: 农历年与1864的相差数
+     * monCyl: 从1900年1月31日以来,闰月数
+     * dayCyl: 与1900年1月31日相差的天数,再加40
      */
     public LunarUtils(Calendar cal) {
         int yearCyl, monCyl, dayCyl;
@@ -122,7 +132,7 @@ public class LunarUtils {
         monCyl = 14;
 
         //用offset减去每农历年的天数
-        // 计算当天是农历第几天
+        //计算当天是农历第几天
         //i最终结果是农历的年份
         //offset是当年的第几天
         int iYear, daysOfYear = 0;
@@ -136,9 +146,9 @@ public class LunarUtils {
             iYear--;
             monCyl -= 12;
         }
+
         //农历年份
         year = iYear;
-
         yearCyl = iYear - 1864;
         leapMonth = leapMonth(iYear); //闰哪个月,1-12
         leap = false;
@@ -182,6 +192,10 @@ public class LunarUtils {
         day = offset + 1;
     }
 
+    /**
+     *  LunarUtils类格式化输出
+     *  @sample 2019-05-11 - 二〇一九年四月初七
+     */
     public static String getChinaYearString(int year){
         String yearstr = "";
         while (year > 10){
@@ -213,19 +227,28 @@ public class LunarUtils {
         return getChinaYearString(year) + (leap ? "闰" : "") + getChinaMonthString(month) + getChinaDayString(day);
     }
 
-
+    /**
+     * LunarUtils类对外接口，根据datestr返回
+     *
+     * @param "string 2018
+     * @return LunarUtils类
+     */
     public static LunarUtils getLunarDate(String datestr){
         Calendar cal = DateStringUtils.StringToCalendar(datestr);
-        SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
         cal.setTimeZone(TimeZone.getDefault());
-        LunarUtils lunar=new LunarUtils(cal);
+        LunarUtils lunar = new LunarUtils(cal);
         return lunar;
     }
 
+    /**
+     * LunarUtils类主函数
+     */
     public static void main(String[] args) throws ParseException {
+        // 换别的日期测只有改这里就可以了
         Calendar today = Calendar.getInstance();
         today.setTime(chineseDateFormat.parse("2019-05-11"));
         LunarUtils lunar = new LunarUtils(today);
+
         System.out.println("北京时间：" + chineseDateFormat.format(today.getTime()) + "　农历" + lunar);
     }
 }
