@@ -1,6 +1,5 @@
 package com.whitetest;
 
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -9,31 +8,58 @@ import java.util.GregorianCalendar;
 
 public class DateStringUtils {
 
-    /* 由 2018-07-17 格式的字符串获取 date */
-    public static Date StringToTime(String timestr) {
+    static private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+
+    /**
+     *  String类型和java.util.Date类型互相转化
+     *  @sample datestr = 2018-07-17
+     */
+    public static Date StringToDate(String datestr) {
         Date date = new Date();
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         try {
-            date = dateFormat.parse(timestr);
+            date = sdf.parse(datestr);
         } catch (ParseException e) {
             e.printStackTrace();
         }
         return date;
     }
 
-    /* 将date类型转化为 格式 2018-07-18 的string */
     public static String DateToString(Date date) {
-        String date_str;
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        date_str = sdf.format(date);
-        return date_str;
+        String datestr;
+        datestr = sdf.format(date);
+        return datestr;
     }
 
+    /**
+     *  String类型和java.util.Calendar类型互相转化
+     *  @sample datestr = 2018-07-17
+     */
+    public static Calendar StringToCalendar(String datestr){
+        Calendar calendar = new GregorianCalendar();
+        try {
+            Date date = sdf.parse(datestr);
+            calendar.setTime(date);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        return calendar;
+    }
+
+    public static String CalendarToString(Calendar calendar){
+        return sdf.format(calendar.getTime());
+    }
+
+    /**
+     *  java.util.Date类型和java.util.Calendar类型互相转化
+     */
     public static Date CalendarToDate(Calendar calendar) {
         return calendar.getTime();
     }
 
-    /* 获取当天的日期，格式 2018-07-18 */
+    /**
+     *  String类型和java.util.Calendar类型互相转化
+     *  @sample datestr = 2018-07-17
+     */
     public static String getCurrentDate() {
         String current_date;
         Date date = new Date();
@@ -42,7 +68,9 @@ public class DateStringUtils {
         return current_date;
     }
 
-    /* 让月份保持为两位的字符串 */
+    /**
+     *  int类型的month和day位数修整
+     */
     public static String getDoubleDigitMonth(int month) {
         String monthstr;
         if (month + 1 < 10) {
@@ -55,7 +83,6 @@ public class DateStringUtils {
         return monthstr;
     }
 
-    /* 让日期保持为两位的字符串 */
     public static String getDoubleDigitDay(int day) {
         String daystr;
         if (day < 10) {
@@ -65,34 +92,16 @@ public class DateStringUtils {
         return daystr;
     }
 
-
-
-    /* calendar转化成 2018-07-18 格式的字符串 */
-    public static String CalendarToString(Calendar calendar){
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");// 设置你想要的格式
-        return dateFormat.format(calendar.getTime());
-    }
-
-    /* 2018-07-17 格式的字符串转化成 calendar */
-    public static Calendar StringToCalendar(String datestr){
-        Calendar calendar = new GregorianCalendar();
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        try {
-            Date date = dateFormat.parse(datestr); //start_date是类似"2013-02-02"的字符串
-            calendar.setTime(date);
-        } catch (Exception e){
-            e.printStackTrace();
-        }
-        return calendar;
-    }
-
-    /* 由string判断是否是双休日 */
+    /**
+     *  判断日期是否为双休日，法定节假日
+     *  @param datestr : yyyy-MM-dd
+     */
     public static boolean isWeekend(String datestr){
         Calendar calendar = DateStringUtils.StringToCalendar(datestr);
         int day = calendar.get(Calendar.DAY_OF_WEEK);
         return (day == Calendar.SATURDAY || day == Calendar.SUNDAY);
     }
-    /* 由string判断是否是节假月 是否是二月，七月，八月 */
+
     public static boolean isHoilday(String datestr){
         Calendar calendar = DateStringUtils.StringToCalendar(datestr);
         int month = calendar.get(Calendar.MONTH);
@@ -100,7 +109,6 @@ public class DateStringUtils {
                 || month == Calendar.JULY);
     }
 
-    /* 由string判断是否是法定节假日 */
     public static String isLegalHoliday(String datestr){
         Calendar calendar = DateStringUtils.StringToCalendar(datestr);
         int month = calendar.get(Calendar.MONTH);
@@ -129,6 +137,13 @@ public class DateStringUtils {
         } else {
             return "无";
         }
+    }
+
+    /**
+     * DateStringUtils类主函数
+     */
+    public static void main(String[] args) throws ParseException {
+
     }
 
 }
