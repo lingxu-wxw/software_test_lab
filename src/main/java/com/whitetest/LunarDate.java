@@ -1,19 +1,15 @@
 package com.whitetest;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.TimeZone;
 
-public class LunarUtils {
+public class LunarDate {
 
     private int year;
     private int month;
     private int day;
     private boolean leap;
 
-    static private SimpleDateFormat chineseDateFormat = new SimpleDateFormat("yyyy-MM-dd");
     final private static String chineseMonthNumber[] = {"正", "二", "三", "四", "五", "六", "七", "八", "九", "十", "十一", "腊"};
     final private static String chineseNumber[] = {"〇", "一", "二", "三", "四", "五", "六", "七", "八", "九", "十"};
     final private static long[] lunarInfo = new long[]
@@ -109,24 +105,26 @@ public class LunarUtils {
     }
 
     /**
-     * LunarUtils类逻辑主题部分
+     * LunarDate类逻辑主题部分
      *
      * 传出y年m月d日对应的农历.
      * yearCyl: 农历年与1864的相差数
      * monCyl: 从1900年1月31日以来,闰月数
      * dayCyl: 与1900年1月31日相差的天数,再加40
      */
-    public LunarUtils(Calendar cal) {
+    public LunarDate(String datestr) {
+        Calendar cal = DateStringUtils.StringToCalendar(datestr);
         int yearCyl, monCyl, dayCyl;
         int leapMonth = 0;
         Date baseDate = null;
         try {
-            baseDate = chineseDateFormat.parse("1900-01-31");
-        } catch (ParseException e) {
+            baseDate = DateStringUtils.StringToDate("1900-01-31");
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
         //求出和1900年1月31日相差的天数
+        assert baseDate != null;
         int offset = (int) ((cal.getTime().getTime() - baseDate.getTime()) / 86400000L);
         dayCyl = offset + 40;
         monCyl = 14;
@@ -193,10 +191,10 @@ public class LunarUtils {
     }
 
     /**
-     *  LunarUtils类格式化输出
+     *  LunarDate类格式化输出
      *  @sample 2019-05-11 - 二〇一九年四月初七
      */
-    public static String getChinaYearString(int year){
+    private static String getChinaYearString(int year){
         String yearstr = "";
         while (year > 10){
             yearstr += chineseNumber[year%10];
@@ -224,31 +222,18 @@ public class LunarUtils {
     }
 
     public String toString() {
-        return getChinaYearString(year) + (leap ? "闰" : "") + getChinaMonthString(month) + getChinaDayString(day);
+        return getChinaYearString(year) + (leap ? "闰" : "") +
+                getChinaMonthString(month) + getChinaDayString(day) +
+                " " + animalsYear() + " " + cyclical() + "年";
     }
 
     /**
-     * LunarUtils类对外接口，根据datestr返回
+     * LunarDate类对外接口，根据datestr返回
      *
-     * @param "string 2018
-     * @return LunarUtils类
+     * @param "string 2018-05-18"
+     * @return LunarDate类
      */
-    public static LunarUtils getLunarDate(String datestr){
-        Calendar cal = DateStringUtils.StringToCalendar(datestr);
-        cal.setTimeZone(TimeZone.getDefault());
-        LunarUtils lunar = new LunarUtils(cal);
-        return lunar;
-    }
-
-    /**
-     * LunarUtils类主函数
-     */
-    public static void main(String[] args) throws ParseException {
-        // 换别的日期测只有改这里就可以了
-        Calendar today = Calendar.getInstance();
-        today.setTime(chineseDateFormat.parse("2019-05-11"));
-        LunarUtils lunar = new LunarUtils(today);
-
-        System.out.println("北京时间：" + chineseDateFormat.format(today.getTime()) + "　农历" + lunar);
+    public static LunarDate getLunarDate(String datestr){
+        return new LunarDate(datestr);
     }
 }

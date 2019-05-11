@@ -9,6 +9,7 @@ import java.util.GregorianCalendar;
 public class DateStringUtils {
 
     static private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+    final private static String weekdayString[] = {"日", "一", "二", "三", "四", "五", "六"};
 
     /**
      *  String类型和java.util.Date类型互相转化
@@ -24,7 +25,13 @@ public class DateStringUtils {
         return date;
     }
 
-    public static String DateToString(Date date) {
+    public static String DateToChineseString(Date date){
+        Calendar calendar = StringToCalendar(DateToString(date));
+        return calendar.get(Calendar.YEAR) + "年" + (calendar.get(Calendar.MONTH)+1) + "月"
+                + calendar.get(Calendar.DAY_OF_MONTH) + "日";
+    }
+
+    private static String DateToString(Date date) {
         String datestr;
         datestr = sdf.format(date);
         return datestr;
@@ -56,10 +63,6 @@ public class DateStringUtils {
         return calendar.getTime();
     }
 
-    /**
-     *  String类型和java.util.Calendar类型互相转化
-     *  @sample datestr = 2018-07-17
-     */
     public static String getCurrentDate() {
         String current_date;
         Date date = new Date();
@@ -69,54 +72,65 @@ public class DateStringUtils {
     }
 
     /**
-     *  int类型的month和day位数修整
+     * @ description: 比较某个日期和现在日期的先后
      */
-    public static String getDoubleDigitMonth(int month) {
-        String monthstr;
-        if (month + 1 < 10) {
-            int m = month + 1;
-            monthstr = "0" + m;
-        } else {
-            int m = month + 1;
-            monthstr = "" + m;
+    public static boolean beforeDate(String datestr1, String datestr2){
+        Date date1 = new Date();
+        Date date2 = new Date();
+        try {
+            date1 = sdf.parse(datestr1);
+            date2 = sdf.parse(datestr2);
+            date2.setYear(date1.getYear());
+        } catch (Exception e){
+            e.printStackTrace();
         }
-        return monthstr;
+        return date1.before(date2);
     }
 
-    public static String getDoubleDigitDay(int day) {
-        String daystr;
-        if (day < 10) {
-            daystr = "0" + day;
-        } else
-            daystr = "" + day;
-        return daystr;
-    }
-
-    /**
-     *  判断日期是否为双休日，法定节假日
-     *  @param datestr : yyyy-MM-dd
-     */
-    public static boolean isWeekend(String datestr){
+    public static String getWeekday(String datestr){
         Calendar calendar = DateStringUtils.StringToCalendar(datestr);
         int day = calendar.get(Calendar.DAY_OF_WEEK);
-        return (day == Calendar.SATURDAY || day == Calendar.SUNDAY);
+        return "星期" + weekdayString[day-1];
     }
 
-    public static boolean isHoilday(String datestr){
-        Calendar calendar = DateStringUtils.StringToCalendar(datestr);
-        int month = calendar.get(Calendar.MONTH);
-        return (month == Calendar.FEBRUARY || month == Calendar.AUGUST
-                || month == Calendar.JULY);
+    public static String getSemester(String datestr){
+        if(isSpringSemester(datestr)){
+            return "春季学期";
+        }else if(isFallSemester(datestr)){
+            return "秋季学期";
+        }else if(isWinterHoilday(datestr)){
+            return "寒假期间";
+        }else if(isSummerHoilday(datestr)){
+            return "暑假期间";
+        }
+        assert false;
+        return "错误情况";
     }
 
-    public static String isLegalHoliday(String datestr){
+    public static boolean isSpringSemester(String datestr){
+        return (beforeDate("2019-02-24", datestr) && beforeDate(datestr, "2019-06-29"));
+    }
+
+    public static boolean isFallSemester(String datestr){
+        return (beforeDate("2019-09-09", datestr) && beforeDate(datestr, "2019-01-17"));
+    }
+
+    public static boolean isWinterHoilday(String datestr){
+        return (beforeDate("2019-01-16", datestr) && beforeDate(datestr, "2019-02-25"));
+    }
+
+    public static boolean isSummerHoilday(String datestr){
+        return (beforeDate("2019-06-28", datestr) && beforeDate(datestr, "2019-09-10"));
+    }
+
+    public static String getLegalHoliday(String datestr){
         Calendar calendar = DateStringUtils.StringToCalendar(datestr);
         int month = calendar.get(Calendar.MONTH);
         int day = calendar.get(Calendar.DAY_OF_MONTH);
 
-        LunarUtils lunar = LunarUtils.getLunarDate(datestr);
-        String lunar_month = LunarUtils.getChinaMonthString(lunar.getLunarMonth());
-        String lunar_day = LunarUtils.getChinaDayString(lunar.getLunarDay());
+        LunarDate lunar = LunarDate.getLunarDate(datestr);
+        String lunar_month = LunarDate.getChinaMonthString(lunar.getLunarMonth());
+        String lunar_day = LunarDate.getChinaDayString(lunar.getLunarDay());
 
         if (month == Calendar.JANUARY && day == 1){
             return "元旦";
@@ -126,24 +140,16 @@ public class DateStringUtils {
             return "春节";
         } else if (month == Calendar.APRIL && day == 5){
             return "清明";
-        } else if (month == Calendar.MAY && day == 1){
+        } else if (month == Calendar.MAY && (day >= 1 && day <= 4)){
             return "劳动节";
         } else if (lunar_month.equals("五月") && lunar_day.equals("初五")){
             return "端午";
         } else if (lunar_month.equals("八月") && lunar_day.equals("十五")){
             return "中秋";
-        } else if (month == Calendar.OCTOBER && (day >= 1 && day <= 3)){
+        } else if (month == Calendar.OCTOBER && (day >= 1 && day <= 7)){
             return "国庆";
         } else {
-            return "无";
+            return "无法定假日";
         }
     }
-
-    /**
-     * DateStringUtils类主函数
-     */
-    public static void main(String[] args) throws ParseException {
-
-    }
-
 }
