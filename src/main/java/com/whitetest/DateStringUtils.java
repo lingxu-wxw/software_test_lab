@@ -24,11 +24,9 @@ public class DateStringUtils {
     public static String getDoubleDigitMonth(int month) {
         String monthstr;
         if (month < 10) {
-            int m = month;
-            monthstr = "0" + m;
+            monthstr = "0" + month;
         } else {
-            int m = month;
-            monthstr = "" + m;
+            monthstr = "" + month;
         }
         return monthstr;
     }
@@ -52,6 +50,7 @@ public class DateStringUtils {
             date = sdf.parse(datestr);
         } catch (ParseException e) {
             e.printStackTrace();
+            return null;
         }
         return date;
     }
@@ -79,6 +78,7 @@ public class DateStringUtils {
             calendar.setTime(date);
         } catch (Exception e){
             e.printStackTrace();
+            return null;
         }
         return calendar;
     }
@@ -109,6 +109,7 @@ public class DateStringUtils {
             date2 = sdf.parse(datestr2);
         } catch (Exception e){
             e.printStackTrace();
+            return false;
         }
         return date1.before(date2);
     }
@@ -122,12 +123,16 @@ public class DateStringUtils {
             date1.setYear(date2.getYear());
         } catch (Exception e){
             e.printStackTrace();
+            return false;
         }
         return date1.before(date2);
     }
 
     public static String getWeekday(String datestr){
         Calendar calendar = DateStringUtils.StringToCalendar(datestr);
+        if(calendar == null){
+            return "日期格式错误!";
+        }
         int day = calendar.get(Calendar.DAY_OF_WEEK);
         return "星期" + weekdayString[day-1];
     }
@@ -164,6 +169,9 @@ public class DateStringUtils {
 
     public static String getLegalHoliday(String datestr){
         Calendar calendar = DateStringUtils.StringToCalendar(datestr);
+        if(calendar == null){
+            return "日期格式错误!";
+        }
         int month = calendar.get(Calendar.MONTH);
         int day = calendar.get(Calendar.DAY_OF_MONTH);
 

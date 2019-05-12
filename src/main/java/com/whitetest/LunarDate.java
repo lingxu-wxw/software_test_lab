@@ -84,12 +84,15 @@ public class LunarDate {
      */
     private static int leapDays(int y) {
         if (leapMonth(y) != 0) {
-            if ((lunarInfo[y - 1900] & 0x10000) != 0)
+            if ((lunarInfo[y - 1900] & 0x10000) != 0) {
                 return 30;
-            else
+            }
+            else {
                 return 29;
-        } else
+            }
+        } else {
             return 0;
+        }
     }
 
     /**
@@ -201,13 +204,13 @@ public class LunarDate {
      *  @sample 2019-05-11 - 二〇一九年四月初七
      */
     private static String getChinaYearString(int year){
-        String yearstr = "";
+        StringBuilder stringBuilder = new StringBuilder("");
         while (year > 10){
-            yearstr += chineseNumber[year%10];
+            stringBuilder.append(chineseNumber[year%10]);
             year = year/10;
         }
-        yearstr += chineseNumber[year];
-        String str = new StringBuilder(yearstr).reverse().toString();
+        stringBuilder.append(chineseNumber[year]);
+        String str = stringBuilder.reverse().toString();
         str += "年";
         return str;
     }

@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 public class DateStringUtilsTest {
 
@@ -46,6 +47,7 @@ public class DateStringUtilsTest {
         Date date = DateStringUtils.StringToDate("2019-5-11");
         String datestr = DateStringUtils.DateToString(date);
         assertEquals("2019-05-11", datestr);
+        assertEquals(null, DateStringUtils.StringToDate("2019--11"));
     }
 
     @Test
@@ -59,14 +61,20 @@ public class DateStringUtilsTest {
     @Test
     public void stringToCalendar() {
         testname = "stringToCalendar";
-        Calendar cal = DateStringUtils.StringToCalendar("2019-5-11");
-        String datestr = DateStringUtils.CalendarToString(cal);
-        assertEquals("2019-05-11", datestr);
+        String datestr = "2019-05-09";
+        Calendar calendar = DateStringUtils.StringToCalendar(datestr);
+        assertEquals(calendar.get(Calendar.YEAR), 2019);
+        assertEquals(calendar.get(Calendar.MONTH)+1, 5);
+        assertEquals(calendar.get(Calendar.DAY_OF_MONTH), 9);
+        assertEquals(null, DateStringUtils.StringToCalendar("2019-05"));
     }
 
     @Test
-    public void calendarToDate() {
-
+    public void CalendarToStringTest() {
+        testname = "CalendarToString";
+        Calendar calendar = new GregorianCalendar();
+        calendar.set(2019, Calendar.MAY, 9);
+        assertEquals(DateStringUtils.CalendarToString(calendar), "2019-05-09");
     }
 
     @Test
@@ -82,6 +90,17 @@ public class DateStringUtilsTest {
         String datestr2 = "2018-07-07";
         boolean isbefore = DateStringUtils.beforeDate(datestr1, datestr2);
         assertEquals(false, isbefore);
+        assertEquals(false, DateStringUtils.beforeDate("2019-01", "2019-05-01"));
+    }
+
+    @Test
+    public void beforeDateIgnoreYear() {
+        testname = "beforeDate";
+        String datestr1 = "2019-05-11";
+        String datestr2 = "2018-07-07";
+        boolean isbefore = DateStringUtils.beforeDateIgnoreYear(datestr1, datestr2);
+        assertEquals(true, isbefore);
+        assertEquals(false, DateStringUtils.beforeDateIgnoreYear("2019-05", "2019-7-12"));
     }
 
     @Test
@@ -89,6 +108,39 @@ public class DateStringUtilsTest {
         testname = "getWeekday";
         String day = DateStringUtils.getWeekday("2019-5-11");
         assertEquals("星期六", day);
+        assertEquals("日期格式错误!", DateStringUtils.getWeekday("2019-5"));
+    }
+
+    @Test
+    public void  isSpringSemesterTest(){
+        String datestr = "2019-03-01";
+        assertEquals(DateStringUtils.isSpringSemester(datestr), true);
+        datestr = "2019-01-01";
+        assertEquals(DateStringUtils.isSpringSemester(datestr), false);
+    }
+
+    @Test
+    public void  isFallSemesterTest(){
+        String datestr = "2019-10-01";
+        assertEquals(DateStringUtils.isFallSemester(datestr), true);
+        datestr = "2019-02-01";
+        assertEquals(DateStringUtils.isFallSemester(datestr), false);
+    }
+
+    @Test
+    public void  isWinterHoildayTest(){
+        String datestr = "2019-02-01";
+        assertEquals(DateStringUtils.isWinterHoilday(datestr), true);
+        datestr = "2019-01-01";
+        assertEquals(DateStringUtils.isWinterHoilday(datestr), false);
+    }
+
+    @Test
+    public void  isSummerHoildayTest(){
+        String datestr = "2019-07-01";
+        assertEquals(DateStringUtils.isSummerHoilday(datestr), true);
+        datestr = "2019-05-09";
+        assertEquals(DateStringUtils.isSummerHoilday(datestr), false);
     }
 
     @Test
@@ -180,6 +232,11 @@ public class DateStringUtilsTest {
         testname = "getLegalHoliday_9";
         String legalHoliday = DateStringUtils.getLegalHoliday("2019-5-11");
         assertEquals("无法定假日", legalHoliday);
+    }
+
+    @Test
+    public void getLegalHoliday_10(){
+        assertEquals("日期格式错误!", DateStringUtils.getLegalHoliday("2019-5"));
     }
 
     //每次测试方法执行结束时，该方法执行一次

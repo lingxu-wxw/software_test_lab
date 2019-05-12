@@ -30,18 +30,17 @@ public class SJTUDate {
                 + holiday + " " + semester;
     }
 
-    /*
-    public static void main(String[] args){
-        String datestr = "";
 
-        while (true) {
-            System.out.print("请输入日期:");
-            Scanner sc = new Scanner(System.in);
-            datestr = sc.nextLine();
-            if (datestr.equals("exit")) break;
-            SJTUDate sjtuDate = new SJTUDate(datestr);
-            System.out.println(sjtuDate.toString());
-        }
-    }
-    */
+//    public static void main(String[] args){
+//        String datestr = "";
+//        while (true) {
+//            System.out.print("请输入日期:");
+//            Scanner sc = new Scanner(System.in);
+//            datestr = sc.nextLine();
+//            if (datestr.equals("exit")) break;
+//            SJTUDate sjtuDate = new SJTUDate(datestr);
+//            System.out.println(sjtuDate.toString());
+//        }
+//    }
+
 }
