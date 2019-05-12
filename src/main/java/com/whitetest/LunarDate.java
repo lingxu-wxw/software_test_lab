@@ -3,6 +3,14 @@ package com.whitetest;
 import java.util.Calendar;
 import java.util.Date;
 
+/**
+ *  闰月：
+ *  农历中12个阴历月大约354天左右，可是一个阳历年就有365.2422天，两者相差了将近12天，
+ *  为了使两者吻合，大约每过三年就必须加一个闰月，精确地说就是19年须加7个闰月。
+ *  闰月加到哪个月，以农历历法规则推断，主要依照与农历的二十四节气相符合来确定。
+ *  加有闰月的那一年有13个月，历年长度为383至385日，这一年也称为闰年。
+ */
+
 public class LunarDate {
 
     private int year;
@@ -39,6 +47,25 @@ public class LunarDate {
 
     public int getLunarDay(){
         return day;
+    }
+
+    /**
+     *  传回农历 y 年的生肖和干支
+     */
+    public String animalsYear() {
+        final String[] Animals = new String[]{"鼠", "牛", "虎", "兔", "龙", "蛇", "马", "羊", "猴", "鸡", "狗", "猪"};
+        return Animals[(year - 4) % 12];
+    }
+
+    public String cyclical() {
+        int num = year - 1900 + 36;
+        return (cyclicalm(num));
+    }
+
+    private static String cyclicalm(int num) {
+        final String[] Gan = new String[]{"甲", "乙", "丙", "丁", "戊", "己", "庚", "辛", "壬", "癸"};
+        final String[] Zhi = new String[]{"子", "丑", "寅", "卯", "辰", "巳", "午", "未", "申", "酉", "戌", "亥"};
+        return (Gan[num % 10] + Zhi[num % 12]);
     }
 
     /**
@@ -83,28 +110,6 @@ public class LunarDate {
     }
 
     /**
-     *  传回农历 y 年的生肖
-     */
-    public String animalsYear() {
-        final String[] Animals = new String[]{"鼠", "牛", "虎", "兔", "龙", "蛇", "马", "羊", "猴", "鸡", "狗", "猪"};
-        return Animals[(year - 4) % 12];
-    }
-
-    /**
-     *  传回农历 y 年的干支
-     */
-    public String cyclical() {
-        int num = year - 1900 + 36;
-        return (cyclicalm(num));
-    }
-
-    private static String cyclicalm(int num) {
-        final String[] Gan = new String[]{"甲", "乙", "丙", "丁", "戊", "己", "庚", "辛", "壬", "癸"};
-        final String[] Zhi = new String[]{"子", "丑", "寅", "卯", "辰", "巳", "午", "未", "申", "酉", "戌", "亥"};
-        return (Gan[num % 10] + Zhi[num % 12]);
-    }
-
-    /**
      * LunarDate类逻辑主题部分
      *
      * 传出y年m月d日对应的农历.
@@ -114,6 +119,7 @@ public class LunarDate {
      */
     public LunarDate(String datestr) {
         Calendar cal = DateStringUtils.StringToCalendar(datestr);
+
         int yearCyl, monCyl, dayCyl;
         int leapMonth = 0;
         Date baseDate = null;
@@ -235,5 +241,9 @@ public class LunarDate {
      */
     public static LunarDate getLunarDate(String datestr){
         return new LunarDate(datestr);
+    }
+
+    public static String getLunarDateString(String datestr){
+        return new LunarDate(datestr).toString();
     }
 }

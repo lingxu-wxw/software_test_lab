@@ -27,14 +27,21 @@ public class SJTUDate {
     public String toString(){
         return DateStringUtils.DateToChineseString(solar_date) + " "
                 + lunar_date.toString() + " " + weekday + " "
-                + holiday + " " + semester + "\n";
+                + holiday + " " + semester;
     }
 
+    /*
     public static void main(String[] args){
-        System.out.print("请输入日期:");
-        Scanner sc = new Scanner(System.in);
-        String datestr = sc.nextLine();
-        SJTUDate sjtuDate = new SJTUDate(datestr);
-        System.out.print(sjtuDate.toString());
+        String datestr = "";
+
+        while (true) {
+            System.out.print("请输入日期:");
+            Scanner sc = new Scanner(System.in);
+            datestr = sc.nextLine();
+            if (datestr.equals("exit")) break;
+            SJTUDate sjtuDate = new SJTUDate(datestr);
+            System.out.println(sjtuDate.toString());
+        }
     }
+    */
 }
